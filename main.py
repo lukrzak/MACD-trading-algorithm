@@ -1,4 +1,5 @@
 import csv
+import matplotlib.pyplot as plt
 file = open("WIG20.csv", "r")
 X_AXIS_COLUMN_NUMBER = 0
 Y_AXIS_COLUMN_NUMBER = 1
@@ -11,6 +12,9 @@ values = csv.reader(file)
 for i in values:
     x_axis.append(i[X_AXIS_COLUMN_NUMBER])
     y_axis.append(float(i[Y_AXIS_COLUMN_NUMBER].replace('.', '').replace(',', '.')))
+# Dates in CSV file are presented in descending order
+x_axis.reverse()
+y_axis.reverse()
 
 
 def get_ema_value(n, day, data):
@@ -35,6 +39,13 @@ def calculate_macd_value():
         signal_values.append(signal)
 
 
+def plot_macd():
+    plt.plot(x_axis, macd_values, color='blue', label='MACD')
+    plt.plot(x_axis, signal_values, color='red', label='SIGNAL')
+    plt.xlabel("Date")
+    plt.legend(loc='upper left')
+    plt.show()
+
+
 calculate_macd_value()
-print(macd_values)
-print(signal_values)
+plot_macd()
