@@ -1,9 +1,13 @@
 import csv
 import matplotlib.pyplot as plt
 
-file = open("WIG20.csv", "r")
+# Data from https://www.nasdaq.com/
+CSV_FILE_NAME = "data.csv"
+STARTING_STOCKS = 1000
 X_AXIS_COLUMN_NUMBER = 0
 Y_AXIS_COLUMN_NUMBER = 1
+
+file = open(CSV_FILE_NAME, "r")
 x_axis = []
 y_axis = []
 macd_values = []
@@ -18,17 +22,17 @@ def read_csv_file():
     values = csv.reader(file)
     for i in values:
         x_axis.append(i[X_AXIS_COLUMN_NUMBER])
-        y_axis.append(float(i[Y_AXIS_COLUMN_NUMBER].replace('.', '').replace(',', '.')))
+        y_axis.append(float(i[Y_AXIS_COLUMN_NUMBER]))
     # Dates in CSV file are presented in descending order
     x_axis.reverse()
     y_axis.reverse()
 
 
 def get_ema_value(n, day, data):
-    alpha = 2 / (n - 1)
+    alpha = 2 / (n + 1)
     ema_value = 0
     ema_value_denominator = 0
-    for i in range(n):
+    for i in range(0, n+1):
         if day - i < 0:
             break
         ema_value += ((1 - alpha) ** i) * data[day - i]
@@ -70,7 +74,6 @@ def plot_macd():
     for i in range(len(buy_days_markers)):
         marker_buy_values.append(y_axis[buy_days_markers[i]])
         marker_sell_values.append(y_axis[sell_days_markers[i]])
-
     plt.plot(x_axis, y_axis, color='black')
     plt.plot(buy_days_markers, marker_buy_values, 'X', color='red', label='BUY')
     plt.plot(sell_days_markers, marker_sell_values, 'X', color='blue', label='SELL')
@@ -79,15 +82,16 @@ def plot_macd():
     plt.show()
 
 
-def simulate(money):
-    funds = money
+def simulate(funds):
     buy_days_markers.insert(0, 0)
     sell_days_markers.append(len(x_axis) - 1)
     for i in range(len(buy_days_markers)):
         shares_bought = funds // y_axis[buy_days_markers[i]]
         funds += shares_bought * (y_axis[sell_days_markers[i]] - y_axis[buy_days_markers[i]])
-    print(funds)
+    print("Final funds: " + str(round(funds, 2)))
+    print("Total income: " + str(round(funds - STARTING_STOCKS * y_axis[0], 2)))
 
 
 plot_macd()
-simulate(5000)
+print("Starting funds: " + str(STARTING_STOCKS * y_axis[0]))
+simulate(STARTING_STOCKS * y_axis[0])
