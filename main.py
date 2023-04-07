@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 # Data from https://www.nasdaq.com/
 CSV_FILE_NAME = "data.csv"
-STARTING_STOCKS = 1000
+STARTING_SHARES = 1000
 X_AXIS_COLUMN_NUMBER = 0
 Y_AXIS_COLUMN_NUMBER = 1
 
@@ -61,11 +61,12 @@ def calculate_macd_value():
 
 def plot_macd():
     calculate_macd_value()
-    plt.plot(x_axis, macd_values, color='blue', label='MACD')
-    plt.plot(x_axis, signal_values, color='red', label='SIGNAL')
+    plt.plot(range(0, 1000), macd_values, color='blue', label='MACD')
+    plt.plot(range(0, 1000), signal_values, color='red', label='SIGNAL')
     plt.plot(sell_days_markers, sell_markers_values, 'X', label='SELL')
     plt.plot(buy_days_markers, buy_markers_values, 'X', label='BUY')
-    plt.xlabel("Date")
+    plt.xlabel("Day")
+    plt.ylabel("MACD Value")
     plt.legend(loc='upper left')
     plt.show()
 
@@ -74,11 +75,12 @@ def plot_macd():
     for i in range(len(buy_days_markers)):
         marker_buy_values.append(y_axis[buy_days_markers[i]])
         marker_sell_values.append(y_axis[sell_days_markers[i]])
-    plt.plot(x_axis, y_axis, color='black')
+    plt.plot(range(0, 1000), y_axis, color='black')
     plt.plot(buy_days_markers, marker_buy_values, 'X', color='red', label='BUY')
     plt.plot(sell_days_markers, marker_sell_values, 'X', color='blue', label='SELL')
     plt.legend(loc='upper left')
-    plt.xlabel("Date")
+    plt.ylabel("Share Value")
+    plt.xlabel("Day")
     plt.show()
 
 
@@ -89,9 +91,9 @@ def simulate(funds):
         shares_bought = funds // y_axis[buy_days_markers[i]]
         funds += shares_bought * (y_axis[sell_days_markers[i]] - y_axis[buy_days_markers[i]])
     print("Final funds: " + str(round(funds, 2)))
-    print("Total income: " + str(round(funds - STARTING_STOCKS * y_axis[0], 2)))
+    print("Total income: " + str(round(funds - STARTING_SHARES * y_axis[0], 2)))
 
 
 plot_macd()
-print("Starting funds: " + str(STARTING_STOCKS * y_axis[0]))
-simulate(STARTING_STOCKS * y_axis[0])
+print("Starting funds: " + str(STARTING_SHARES * y_axis[0]))
+simulate(STARTING_SHARES * y_axis[0])
